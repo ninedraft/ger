@@ -28,7 +28,7 @@ func Proc(t func()) Task {
 }
 
 func AllForOne(ctx context.Context, tasks ...Task) error {
-	var supervisor = newSupervisor(tasks, func(ctx TaskContext, err error) {
+	var supervisor = newSupervisor(tasks, func(ctx _TaskContext, err error) {
 		var isRestart = errors.Is(err, ErrRestart)
 		switch {
 		case isRestart && ctx.IsRestarting():
@@ -45,7 +45,7 @@ func AllForOne(ctx context.Context, tasks ...Task) error {
 }
 
 func OneForOne(ctx context.Context, tasks ...Task) error {
-	var supervisor = newSupervisor(tasks, func(ctx TaskContext, err error) {
+	var supervisor = newSupervisor(tasks, func(ctx _TaskContext, err error) {
 		if errors.Is(err, ErrRestart) {
 			ctx.RestartMe()
 			return
@@ -57,7 +57,7 @@ func OneForOne(ctx context.Context, tasks ...Task) error {
 }
 
 func OneForRest(ctx context.Context, tasks ...Task) error {
-	var supervisor = newSupervisor(tasks, func(ctx TaskContext, err error) {
+	var supervisor = newSupervisor(tasks, func(ctx _TaskContext, err error) {
 		var isRestart = errors.Is(err, ErrRestart)
 		switch {
 		case isRestart && ctx.IsRestarting():
