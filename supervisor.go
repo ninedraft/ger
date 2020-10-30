@@ -7,7 +7,7 @@ import (
 	"go.uber.org/multierr"
 )
 
-type TaskContext interface {
+type _TaskContext interface {
 	context.Context
 
 	StopMe()
@@ -30,7 +30,7 @@ type taskSupervisor struct {
 	debugLog  func(string, ...interface{})
 }
 
-type restartStrategy func(ctx TaskContext, err error)
+type restartStrategy func(ctx _TaskContext, err error)
 
 func newSupervisor(tasks []Task, strategy restartStrategy) *taskSupervisor {
 	var sup = &taskSupervisor{
