@@ -9,14 +9,14 @@ func _() {
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
 	_ = x[ErrRestart-1]
-	_ = x[ErrAllCancelled-2]
+	_ = x[ErrAllCanceled-2]
 	_ = x[ErrStopped-3]
 	_ = x[ErrSupervisorIsNotRunning-4]
 }
 
-const _cError_name = "restart meall tasks are cancelledtask is stoppedsupervisor is not running"
+const _cError_name = "restart meall tasks are canceledtask is stoppedsupervisor is not running"
 
-var _cError_index = [...]uint8{0, 10, 33, 48, 73}
+var _cError_index = [...]uint8{0, 10, 32, 47, 72}
 
 func (i cError) String() string {
 	i -= 1
