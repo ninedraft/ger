@@ -6,7 +6,7 @@ import (
 )
 
 // Task is a interruptable function.
-// This package functions expects task to return following errors.
+// This package functions expects task to return following errors to sygnal task lifecycle:
 // 		- ErrStopped
 //		- ErrRestart
 type Task func(ctx context.Context) error
