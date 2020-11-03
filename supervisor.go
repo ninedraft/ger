@@ -32,21 +32,42 @@ type taskSupervisor struct {
 
 type restartStrategy func(ctx _TaskContext, err error)
 
+var supPool = &sync.Pool{
+	New: func() interface{} {
+		return &taskSupervisor{}
+	},
+}
+
 func newSupervisor(tasks []Task, strategy restartStrategy) *taskSupervisor {
-	var sup = &taskSupervisor{
-		errors:   make(chan error, len(tasks)),
-		strategy: strategy,
-		tasks:    make([]*taskContext, 0, len(tasks)),
+	var sup, ok = supPool.Get().(*taskSupervisor)
+	if !ok {
+		sup = &taskSupervisor{}
 	}
+	sup.init(tasks, strategy)
+	return sup
+}
+
+func freeSupervisor(sup *taskSupervisor) {
+	sup.reset()
+	supPool.Put(sup)
+}
+
+func (supervisor *taskSupervisor) init(tasks []Task, strategy restartStrategy) {
+	supervisor.errors = make(chan error, len(tasks))
+	supervisor.strategy = strategy
+	supervisor.tasks = make([]*taskContext, 0, len(tasks))
 	for i, t := range tasks {
-		sup.tasks = append(sup.tasks, &taskContext{
+		supervisor.tasks = append(supervisor.tasks, &taskContext{
 			id:      i,
 			Context: context.Background(),
 			task:    t,
-			sup:     sup,
+			sup:     supervisor,
 		})
 	}
-	return sup
+}
+
+func (supervisor *taskSupervisor) reset() {
+	*supervisor = taskSupervisor{}
 }
 
 func (supervisor *taskSupervisor) getStrategy() restartStrategy {

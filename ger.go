@@ -50,6 +50,7 @@ func AllForOne(ctx context.Context, tasks ...Task) error {
 			ctx.StopMe()
 		}
 	})
+	defer freeSupervisor(supervisor)
 	return supervisor.Run(ctx)
 }
 
@@ -64,6 +65,7 @@ func OneForOne(ctx context.Context, tasks ...Task) error {
 		ctx.PushError(err)
 		ctx.StopMe()
 	})
+	defer freeSupervisor(supervisor)
 	return supervisor.Run(ctx)
 }
 
@@ -84,5 +86,6 @@ func OneForRest(ctx context.Context, tasks ...Task) error {
 			ctx.StopMe()
 		}
 	})
+	defer freeSupervisor(supervisor)
 	return supervisor.Run(ctx)
 }
