@@ -107,7 +107,7 @@ func (supervisor *taskSupervisor) CollectErrors(ctx context.Context) error {
 
 	var errRun error
 	for {
-		var err, ok = supervisor.awaitError(ctx)
+		var ok, err = supervisor.awaitError(ctx)
 		if !ok {
 			break
 		}
@@ -116,12 +116,12 @@ func (supervisor *taskSupervisor) CollectErrors(ctx context.Context) error {
 	return errRun
 }
 
-func (supervisor *taskSupervisor) awaitError(ctx context.Context) (_ error, next bool) {
+func (supervisor *taskSupervisor) awaitError(ctx context.Context) (next bool, _ error) {
 	select {
 	case err, ok := <-supervisor.errors:
-		return err, ok
+		return ok, err
 	case <-ctx.Done():
-		return ctx.Err(), false
+		return false, ctx.Err()
 	}
 }
 
