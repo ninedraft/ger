@@ -2,6 +2,7 @@ package ger
 
 import (
 	"context"
+	"fmt"
 	"sync/atomic"
 
 	"go.uber.org/multierr"
@@ -93,8 +94,8 @@ func (tc *taskContext) Err() error {
 }
 
 var (
-	errStopped    = multierr.Append(context.Canceled, ErrStopped)
-	errRestarting = multierr.Append(context.Canceled, ErrRestart)
+	errStopped    = wraperrs("context", context.Canceled, ErrStopped)
+	errRestarting = wraperrs("context", context.Canceled, ErrRestart)
 )
 
 func (tc *taskContext) IsStopped() bool {
@@ -118,4 +119,9 @@ func (tc *taskContext) PushError(err error) {
 	case <-tc.Done():
 	case tc.sup.getErrors() <- err:
 	}
+}
+
+func wraperrs(msg string, errs ...error) error {
+	var err = multierr.Combine(errs...)
+	return fmt.Errorf("%s: %w", msg, err)
 }
